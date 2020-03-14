@@ -5,7 +5,7 @@ const app = new App(
     [
         new CategoryController(),
     ],
-    8080
+    process.env.PORT || 5000
 );
 
 app.listen();
