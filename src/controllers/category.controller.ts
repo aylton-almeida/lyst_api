@@ -2,13 +2,11 @@ import * as express from 'express';
 import Category from '../models/category.model';
 import { param } from 'express-validator';
 import { validate } from '../utils/validation.utils';
+import { fakeDB } from '../utils/fakeDB';
 
 class CategoryController {
   public path = '/category';
   public router = express.Router();
-
-  // To be substituted by Sequelize model
-  private categories: Category[] = [new Category({ id: 1, title: 'category 1', color: 'ffffff' })];
 
   constructor() {
     this.initializeRoutes();
@@ -30,44 +28,43 @@ class CategoryController {
     this.router.put(this.path, validate(Category.schema), this.updateCategory);
   }
 
-  getCategories = (request: express.Request, response: express.Response) =>
-    response.send(this.categories);
+  getCategories = (request: express.Request, response: express.Response) => response.send(fakeDB);
 
   getCategory = (request: express.Request, response: express.Response) => {
     const id = request.params.id;
-    const category = this.categories.find(qry => qry.id === Number(id));
+    const category = fakeDB.find(qry => qry.id === Number(id));
     if (category != null) response.send(category);
     else response.status(404).send({ error: 'Category not found' });
   };
 
   createCategory = (request: express.Request, response: express.Response) => {
     const category: Category = request.body;
-    const lastCategory = this.categories[this.categories.length - 1];
+    const lastCategory = fakeDB[fakeDB.length - 1];
     if (lastCategory == null) category.id = 1;
     else {
       // @ts-ignore
       category.id = lastCategory.id + 1;
     }
-    this.categories.push(new Category(category));
-    response.send(this.categories[this.categories.length - 1]);
-  };
-
-  deleteCategory = (request: express.Request, response: express.Response) => {
-    const id = request.params.id;
-    const categoryId = this.categories.findIndex(qry => qry.id === Number(id));
-    if (categoryId != -1) {
-      this.categories.splice(categoryId, 1);
-      response.send('Category deleted');
-    } else response.status(404).send({ error: 'Category not found' });
+    fakeDB.push(new Category(category));
+    response.send(fakeDB[fakeDB.length - 1]);
   };
 
   updateCategory = (request: express.Request, response: express.Response) => {
     const category: Category = request.body;
-    const oldCategory = this.categories.find(qry => qry.id === Number(category.id));
+    const oldCategory = fakeDB.find(qry => qry.id === Number(category.id));
     if (oldCategory != null) {
       oldCategory.title = category.title;
       oldCategory.color = category.color;
       response.send('Category updated');
+    } else response.status(404).send({ error: 'Category not found' });
+  };
+
+  deleteCategory = (request: express.Request, response: express.Response) => {
+    const id = request.params.id;
+    const categoryId = fakeDB.findIndex(qry => qry.id === Number(id));
+    if (categoryId != -1) {
+      fakeDB.splice(categoryId, 1);
+      response.send('Category deleted');
     } else response.status(404).send({ error: 'Category not found' });
   };
 }

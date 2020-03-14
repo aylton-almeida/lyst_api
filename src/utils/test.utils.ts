@@ -5,7 +5,8 @@ export default abstract class TestUtils {
   static testRouteGet(path: string, expectedResponse: any, status: number, done: any) {
     request(app)
       .get(path)
-      .expect(status, expectedResponse)
+      .expect(status)
+      .expect(expectedResponse)
       .end(err => {
         if (err) {
           return done(err);
@@ -23,8 +24,10 @@ export default abstract class TestUtils {
   ) {
     request(app)
       .post(path)
-      .set({ body: body })
-      .expect(status, expectedResponse)
+      .send(body)
+      .set({ Accept: 'application/json' })
+      .expect(status)
+      .expect(expectedResponse)
       .end(err => {
         if (err) {
           return done(err);
@@ -32,10 +35,19 @@ export default abstract class TestUtils {
         done();
       });
   }
-  static testRoutePut(path: string, expectedResponse: any, status: number, done: any) {
+  static testRoutePut(
+    path: string,
+    expectedResponse: any,
+    status: number,
+    done: any,
+    body: object
+  ) {
     request(app)
       .put(path)
-      .expect(status, expectedResponse)
+      .send(body)
+      .set({ Accept: 'application/json' })
+      .expect(status)
+      .expect(expectedResponse)
       .end(err => {
         if (err) {
           return done(err);
@@ -47,7 +59,8 @@ export default abstract class TestUtils {
   static testRouteDelete(path: string, expectedResponse: any, status: number, done: any) {
     request(app)
       .delete(path)
-      .expect(status, expectedResponse)
+      .expect(status)
+      .expect(expectedResponse)
       .end(err => {
         if (err) {
           return done(err);

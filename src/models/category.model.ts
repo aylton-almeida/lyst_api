@@ -15,8 +15,10 @@ export default class Category {
     id: {
       in: ['params', 'query', 'body'],
       isInt: true,
-      optional: true,
       errorMessage: 'Invalid Id',
+      optional: {
+        options: { nullable: true },
+      },
     },
     title: {
       in: ['body'],
@@ -28,7 +30,7 @@ export default class Category {
       isString: true,
       errorMessage: 'Invalid color',
       isLength: {
-        errorMessage: 'Color must be 3 or 6 chars long',
+        errorMessage: 'Color must be between 3 and 6 chars long',
         options: { min: 3, max: 6 },
       },
     },
