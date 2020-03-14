@@ -1,5 +1,7 @@
 import * as express from 'express';
 import Category from '../models/category.model';
+import { param } from 'express-validator';
+import { validate } from '../utils/validation.utils';
 
 class CategoryController {
   public path = '/category';
@@ -14,10 +16,18 @@ class CategoryController {
 
   public initializeRoutes() {
     this.router.get(this.path, this.getCategories);
-    this.router.get(`${this.path}/:id`, this.getCategory);
-    this.router.post(this.path, this.createCategory);
-    this.router.delete(`${this.path}/:id`, this.deleteCategory);
-    this.router.put(this.path, this.updateCategory);
+    this.router.get(
+      `${this.path}/:id`,
+      validate([param('id', 'invalid Id').isInt()]),
+      this.getCategory
+    );
+    this.router.post(this.path, validate(Category.schema), this.createCategory);
+    this.router.delete(
+      `${this.path}/:id`,
+      validate([param('id', 'invalid Id').isInt()]),
+      this.deleteCategory
+    );
+    this.router.put(this.path, validate(Category.schema), this.updateCategory);
   }
 
   getCategories = (request: express.Request, response: express.Response) =>
@@ -32,14 +42,20 @@ class CategoryController {
 
   createCategory = (request: express.Request, response: express.Response) => {
     const category: Category = request.body;
+    const lastCategory = this.categories[this.categories.length - 1];
+    if (lastCategory == null) category.id = 1;
+    else {
+      // @ts-ignore
+      category.id = lastCategory.id + 1;
+    }
     this.categories.push(new Category(category));
-    response.send(category);
+    response.send(this.categories[this.categories.length - 1]);
   };
 
   deleteCategory = (request: express.Request, response: express.Response) => {
     const id = request.params.id;
     const categoryId = this.categories.findIndex(qry => qry.id === Number(id));
-    if (categoryId != null) {
+    if (categoryId != -1) {
       this.categories.splice(categoryId, 1);
       response.send('Category deleted');
     } else response.status(404).send({ error: 'Category not found' });

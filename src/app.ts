@@ -1,33 +1,15 @@
-import * as express from 'express';
+import express from 'express';
 import * as bodyParser from 'body-parser';
+import CategoryController from './controllers/category.controller';
 
-class App {
-  app: express.Application;
-  port: number;
+const app = express();
 
-  constructor(controllers: any, port: any) {
-    this.app = express();
-    this.port = port;
+app.use(bodyParser.json());
 
-    this.initializeMiddleware();
-    this.initializeControllers(controllers);
-  }
+const controllers = [new CategoryController()];
 
-  private initializeMiddleware() {
-    this.app.use(bodyParser.json());
-  }
+controllers.forEach((controller: any) => {
+  app.use('/', controller.router);
+});
 
-  private initializeControllers(controllers: any) {
-    controllers.forEach((controller: any) => {
-      this.app.use('/', controller.router);
-    });
-  }
-
-  public listen() {
-    this.app.listen(this.port, () => {
-      console.log(`App listening on port ${this.port}`);
-    });
-  }
-}
-
-export default App;
+export default app;
