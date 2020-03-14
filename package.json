@@ -6,7 +6,10 @@
   "scripts": {
     "test": "jest",
     "dev": "ts-node ./src/server.ts",
-    "start": "ts-node ./src/server.ts"
+    "start": "npm run serve",
+    "build-ts":  "tsc",
+    "postinstall": "npm run build-ts",
+    "serve": "node dist/server.js"
   },
   "author": "",
   "license": "ISC",
