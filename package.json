@@ -3,23 +3,47 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/server.js",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.ts": [
+      "tslint -c tslint.json 'src/**/*.ts'",
+      "cross-env  CI=true npm run test --bail --findRelatedTests"
+    ]
+  },
   "scripts": {
-    "test": "jest",
+    "test": "jest src",
     "dev": "ts-node ./src/server.ts",
     "start": "npm run serve",
     "build-ts": "tsc",
     "postinstall": "npm run build-ts",
     "serve": "node dist/server.js",
-    "watch-node": "nodemon dist/server.js",
-    "watch-ts": "tsc -w",
+    "dev:watch": "nodemon",
     "lint": "tslint -c tslint.json 'src/**/*.ts'"
   },
   "author": "",
   "license": "ISC",
+  "nodemonConfig": {
+    "ignore": [
+      "**/*.test.ts",
+      "**/*.spec.ts",
+      ".git",
+      "node_modules"
+    ],
+    "watch": [
+      "src"
+    ],
+    "exec": "npm run dev",
+    "ext": "ts"
+  },
   "dependencies": {
     "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "express-validator": "^6.4.0",
     "pg": "^7.18.2",
     "pg-hstore": "^2.3.3",
     "sequelize": "^5.21.5",
@@ -33,9 +57,15 @@
     "@types/express": "^4.17.3",
     "@types/jest": "^25.1.4",
     "@types/node": "^13.9.1",
+    "@types/supertest": "^2.0.8",
     "@types/validator": "^12.0.1",
+    "cross-env": "^7.0.2",
+    "husky": "^4.2.3",
     "jest": "^25.1.0",
+    "lint-staged": "^10.0.8",
+    "nodemon": "^2.0.2",
     "prettier": "^1.19.1",
+    "supertest": "^4.0.2",
     "ts-jest": "^25.2.1",
     "tslint": "^6.1.0",
     "tslint-config-prettier": "^1.18.0",

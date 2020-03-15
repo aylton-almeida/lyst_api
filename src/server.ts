@@ -1,6 +1,4 @@
-import App from './app';
-import CategoryController from './controllers/category.controller';
+import app from './app';
 
-const app = new App([new CategoryController()], process.env.PORT || 8080);
-
-app.listen();
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => console.log('Listening on port ' + PORT));
