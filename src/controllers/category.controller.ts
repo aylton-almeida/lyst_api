@@ -62,7 +62,7 @@ class CategoryController {
   deleteCategory = (request: express.Request, response: express.Response) => {
     const id = request.params.id;
     const categoryId = fakeDB.findIndex(qry => qry.id === Number(id));
-    if (categoryId != -1) {
+    if (categoryId !== -1) {
       fakeDB.splice(categoryId, 1);
       response.send('Category deleted');
     } else response.status(404).send({ error: 'Category not found' });

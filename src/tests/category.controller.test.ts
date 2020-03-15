@@ -3,7 +3,7 @@ import Category from '../models/category.model';
 import { fakeDB } from '../utils/fakeDB';
 
 beforeEach(() => {
-  //TODO: Change for real db in the future
+  // TODO: Change for real db in the future
   while (fakeDB.length > 0) fakeDB.pop();
   fakeDB.push(new Category({ id: 1, title: 'category 1', color: 'ffffff' }));
 });
@@ -37,7 +37,7 @@ describe('testing all create operations', () => {
     const expectedResponse = JSON.stringify(
       new Category({ id: 2, title: 'category 2', color: 'ffffff' })
     );
-    const body = new Category({ id: 2, title: 'category 2', color: 'ffffff' });
+    const body = new Category({ title: 'category 2', color: 'ffffff' });
     TestUtils.testRoutePost('/category', expectedResponse, 200, done, body);
   });
 
@@ -84,7 +84,6 @@ describe('testing all update operations', () => {
     const body = new Category({ id: 2, title: 'category 2', color: 'fffffff' });
     TestUtils.testRoutePut('/category', expectedResponse, 422, done, body);
   });
-  //TODO: Test scheme
 });
 
 describe('testing all delete operations', () => {
@@ -103,7 +102,5 @@ describe('testing all delete operations', () => {
       errors: [{ value: 'a', msg: 'invalid Id', param: 'id', location: 'params' }],
     });
     TestUtils.testRouteDelete('/category/a', expectedResponse, 422, done);
-  })
-
-  //TODO: Test node validation
+  });
 });
