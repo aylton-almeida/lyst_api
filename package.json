@@ -1,7 +1,7 @@
 {
   "name": "lyst_api",
   "version": "1.0.0",
-  "description": "",
+  "description": "Simple app to manage notes in categories",
   "main": "dist/server.js",
   "husky": {
     "hooks": {
