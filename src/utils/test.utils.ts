@@ -1,19 +1,25 @@
 import request from 'supertest';
 import app from '../app';
+import Category from '../models/category.model';
 
 export default abstract class TestUtils {
-  static testRouteGet(path: string, expectedResponse: any, status: number) {
+  static testGetAll(path: string, expectedResponse: any[], status: number) {
     return request(app)
       .get(path)
-      .expect(status)
       .expect(res => {
-        console.log(expectedResponse);
-        console.log(res.body['id'] === expectedResponse['id']);
-        console.log(res.body);
-        Object.keys(expectedResponse).forEach(key => {
-          if (res.body[key] !== expectedResponse[key]) return false;
+        expect(res.status).toBe(status);
+        res.body.forEach((item: Category, index: number) => {
+          expect(item).toMatchObject(expectedResponse[index]);
         });
-        return true;
+      });
+  }
+
+  static testGet(path: string, expectedResponse: any, status: number) {
+    return request(app)
+      .get(path)
+      .expect(res => {
+        expect(res.status).toBe(status);
+        expect(res.body).toMatchObject(expectedResponse);
       });
   }
 
@@ -22,8 +28,10 @@ export default abstract class TestUtils {
       .post(path)
       .send(body)
       .set({ Accept: 'application/json' })
-      .expect(status)
-      .expect(expectedResponse);
+      .expect(res => {
+        expect(res.status).toBe(status);
+        expect(res.body).toMatchObject(expectedResponse);
+      });
   }
 
   static testRoutePut(path: string, expectedResponse: any, status: number, body: object) {
@@ -31,14 +39,18 @@ export default abstract class TestUtils {
       .put(path)
       .send(body)
       .set({ Accept: 'application/json' })
-      .expect(status)
-      .expect(expectedResponse);
+      .expect(res => {
+        expect(res.status).toBe(status);
+        expect(res.body).toMatchObject(expectedResponse);
+      });
   }
 
   static testRouteDelete(path: string, expectedResponse: any, status: number) {
     return request(app)
       .delete(path)
-      .expect(status)
-      .expect(expectedResponse);
+      .expect(res => {
+        expect(res.status).toBe(status);
+        expect(res.body).toMatchObject(expectedResponse);
+      });
   }
 }

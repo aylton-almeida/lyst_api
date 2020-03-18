@@ -80,10 +80,10 @@ class CategoryController {
       const [numUpdates] = await Category.update(
         { title, color },
         {
-          where: { id: id },
+          where: { id },
         }
       );
-      if (numUpdates === 1) res.send('Category updated');
+      if (numUpdates === 1) res.send({ msg: 'Category updated' });
       else res.status(404).send({ error: 'Category not found' });
     } catch (e) {
       res.status(500).send({ error: e.message });
@@ -93,8 +93,8 @@ class CategoryController {
   deleteCategory = async (req: express.Request, res: express.Response) => {
     try {
       const { id } = req.params;
-      const numDestroyed = await Category.destroy({ where: { id: id } });
-      if (numDestroyed === 1) res.send('Category deleted');
+      const numDestroyed = await Category.destroy({ where: { id } });
+      if (numDestroyed === 1) res.send({ msg: 'Category deleted' });
       else res.status(404).send({ error: 'Category not found' });
     } catch (e) {
       console.log(e);
