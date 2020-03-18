@@ -10,7 +10,8 @@
   },
   "lint-staged": {
     "src/**/*.ts": [
-      "tslint -c tslint.json 'src/**/*.ts'"
+      "tslint -c tslint.json 'src/**/*.ts'",
+      "cross-env CI=true yarn test --bail --findRelatedTests"
     ]
   },
   "scripts": {
