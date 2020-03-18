@@ -1,38 +1,45 @@
-import { checkSchema, ValidationChain } from 'express-validator';
+import sequelizeInstance from './';
+import { Model, DataTypes } from 'sequelize';
 
-export default class Category {
-  id?: number;
-  title: string;
-  color: string;
+const config = {
+  tableName: 'categories',
+  sequelize: sequelizeInstance,
+};
 
-  constructor(category: any) {
-    this.id = Number(category.id);
-    this.title = category.title;
-    this.color = category.color;
-  }
+class Category extends Model<Category> {
+  public id!: number;
+  public title!: string;
+  public color!: string;
 
-  static schema: ValidationChain[] = checkSchema({
+  // Declare methods example
+  // verifyPassword: (password: string) => boolean;
+
+  // timestamps
+  public readonly createdDate!: Date;
+  public readonly updatedOn!: Date;
+
+  public static associations: {
+    // Add associations here
+  };
+}
+
+Category.init(
+  {
     id: {
-      in: ['params', 'query', 'body'],
-      isInt: true,
-      errorMessage: 'Invalid Id',
-      optional: {
-        options: { nullable: true },
-      },
+      primaryKey: true,
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
     },
     title: {
-      in: ['body'],
-      isString: true,
-      errorMessage: 'Invalid title',
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     color: {
-      in: ['body'],
-      isString: true,
-      errorMessage: 'Invalid color',
-      isLength: {
-        errorMessage: 'Color must be between 3 and 6 chars long',
-        options: { min: 3, max: 6 },
-      },
+      type: DataTypes.STRING,
+      allowNull: false,
     },
-  });
-}
+  },
+  config
+);
+
+export default Category;

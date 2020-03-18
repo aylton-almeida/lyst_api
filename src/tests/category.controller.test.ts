@@ -1,106 +1,136 @@
 import TestUtils from '../utils/test.utils';
 import Category from '../models/category.model';
-import { fakeDB } from '../utils/fakeDB';
 
-beforeEach(() => {
-  // TODO: Change for real db in the future
-  while (fakeDB.length > 0) fakeDB.pop();
-  fakeDB.push(new Category({ id: 1, title: 'category 1', color: 'ffffff' }));
+beforeEach(async () => {
+  await initializeDB();
 });
 
-describe('testing all get operations', () => {
+describe('Testing all get operations', () => {
   test('should return a list with all categories', done => {
-    const expectedResponse = JSON.stringify([{ id: 1, title: 'category 1', color: 'ffffff' }]);
-    TestUtils.testRouteGet('/category', expectedResponse, 200, done);
+    const expectedResponse = [
+      { title: 'Category 1', color: 'ffffff' },
+      { title: 'Category 2', color: '000000' },
+    ];
+    TestUtils.testGetAll('/category', expectedResponse, 200)
+      .then(() => done())
+      .catch(e => done(e));
   });
 
   test('should return the first category', done => {
-    const expectedResponse = JSON.stringify({ id: 1, title: 'category 1', color: 'ffffff' });
-    TestUtils.testRouteGet('/category/1', expectedResponse, 200, done);
+    const expectedResponse = { title: 'Category 1', color: 'ffffff' };
+    TestUtils.testGet('/category/1', expectedResponse, 200)
+      .then(() => done())
+      .catch(e => done(e));
   });
 
   test('should return no category found with id', done => {
-    const expectedResponse = JSON.stringify({ error: 'Category not found' });
-    TestUtils.testRouteGet('/category/2', expectedResponse, 404, done);
+    const expectedResponse = { error: 'Category not found' };
+    TestUtils.testGet('/category/3', expectedResponse, 404)
+      .then(() => done())
+      .catch(e => done(e));
   });
 
   test('should return invalid id', done => {
-    const expectedResponse = JSON.stringify({
-      errors: [{ value: 'a', msg: 'invalid Id', param: 'id', location: 'params' }],
-    });
-    TestUtils.testRouteGet('/category/a', expectedResponse, 422, done);
+    const expectedResponse = {
+      errors: [{ value: 'a', msg: 'invalid Id', param: 'id' }],
+    };
+    TestUtils.testGet('/category/a', expectedResponse, 422)
+      .then(() => done())
+      .catch(e => done(e));
   });
 });
 
-describe('testing all create operations', () => {
+describe('Testing all create operations', () => {
   test('should create category increasing id', done => {
-    const expectedResponse = JSON.stringify(
-      new Category({ id: 2, title: 'category 2', color: 'ffffff' })
-    );
-    const body = new Category({ title: 'category 2', color: 'ffffff' });
-    TestUtils.testRoutePost('/category', expectedResponse, 200, done, body);
+    const expectedResponse = { id: 3, title: 'category 3', color: 'ffffff' };
+    const body = { title: 'category 3', color: 'ffffff' };
+    TestUtils.testRoutePost('/category', expectedResponse, 200, body)
+      .then(() => done())
+      .catch(e => done(e));
   });
 
   test('should return invalid schema', done => {
-    const expectedResponse = JSON.stringify({
+    const expectedResponse = {
       errors: [
         {
-          value: 'fffffff',
+          value: '123456789',
           msg: 'Color must be between 3 and 6 chars long',
-          param: 'color',
-          location: 'body',
         },
       ],
-    });
-    const body = new Category({ id: 2, title: 'category 2', color: 'fffffff' });
-    TestUtils.testRoutePost('/category', expectedResponse, 422, done, body);
+    };
+    const body = { id: 2, title: 'category 2', color: '123456789' };
+    TestUtils.testRoutePost('/category', expectedResponse, 422, body)
+      .then(() => done())
+      .catch(e => done(e));
   });
 });
 
-describe('testing all update operations', () => {
+describe('Testing all update operations', () => {
   test('should update category', done => {
-    const expectedResponse = 'Category updated';
-    const body = new Category({ id: 1, title: 'category 1', color: 'ffffff' });
-    TestUtils.testRoutePut('/category', expectedResponse, 200, done, body);
+    const expectedResponse = { msg: 'Category updated' };
+    const body = { id: 1, title: 'Category 1', color: 'ffffff' };
+    TestUtils.testRoutePut('/category', expectedResponse, 200, body)
+      .then(() => done())
+      .catch(e => done(e));
   });
 
   test('should point category not found', done => {
     const expectedResponse = { error: 'Category not found' };
-    const body = new Category({ title: 'category 1', color: 'ffffff' });
-    TestUtils.testRoutePut('/category', expectedResponse, 404, done, body);
+    const body = { id: 4, title: 'Category 1', color: 'ffffff' };
+    TestUtils.testRoutePut('/category', expectedResponse, 404, body)
+      .then(() => done())
+      .catch(e => done(e));
   });
 
   test('should return invalid schema', done => {
-    const expectedResponse = JSON.stringify({
+    const expectedResponse = {
       errors: [
         {
           value: 'fffffff',
           msg: 'Color must be between 3 and 6 chars long',
-          param: 'color',
-          location: 'body',
         },
       ],
-    });
-    const body = new Category({ id: 2, title: 'category 2', color: 'fffffff' });
-    TestUtils.testRoutePut('/category', expectedResponse, 422, done, body);
+    };
+    const body = { id: 2, title: 'category 2', color: 'fffffff' };
+    TestUtils.testRoutePut('/category', expectedResponse, 422, body)
+      .then(() => done())
+      .catch(e => done(e));
   });
 });
 
 describe('testing all delete operations', () => {
   test('should delete the first category', done => {
-    const expectedResponse = 'Category deleted';
-    TestUtils.testRouteDelete('/category/1', expectedResponse, 200, done);
+    const expectedResponse = { msg: 'Category deleted' };
+    TestUtils.testRouteDelete('/category/1', expectedResponse, 200)
+      .then(() => done())
+      .catch(e => done(e));
   });
 
   test('should return category not found for deletion', done => {
-    const expectedResponse = JSON.stringify({ error: 'Category not found' });
-    TestUtils.testRouteDelete('/category/2', expectedResponse, 404, done);
+    const expectedResponse = { error: 'Category not found' };
+    TestUtils.testRouteDelete('/category/3', expectedResponse, 404)
+      .then(() => done())
+      .catch(e => done(e));
   });
 
   test('should return invalid schema', done => {
-    const expectedResponse = JSON.stringify({
-      errors: [{ value: 'a', msg: 'invalid Id', param: 'id', location: 'params' }],
-    });
-    TestUtils.testRouteDelete('/category/a', expectedResponse, 422, done);
+    const expectedResponse = {
+      errors: [{ value: 'a', msg: 'invalid Id', param: 'id' }],
+    };
+    TestUtils.testRouteDelete('/category/a', expectedResponse, 422)
+      .then(() => done())
+      .catch(e => done(e));
   });
 });
+
+async function initializeDB() {
+  await Category.destroy({ where: {}, force: true, restartIdentity: true, truncate: true });
+  await Category.create({
+    title: 'Category 1',
+    color: 'ffffff',
+  });
+  await Category.create({
+    title: 'Category 2',
+    color: '000000',
+  });
+}
