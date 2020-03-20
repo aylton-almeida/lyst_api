@@ -25,7 +25,7 @@ describe('Testing all get operations', () => {
 
   test('should return no category found with id', done => {
     const expectedResponse = { error: 'Category not found' };
-    TestUtils.testGet('/category/3', expectedResponse, 404)
+    TestUtils.testGet('/category/4', expectedResponse, 404)
       .then(() => done())
       .catch(e => done(e));
   });
