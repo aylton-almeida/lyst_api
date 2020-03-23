@@ -1,19 +1,17 @@
 import sequelizeInstance from './';
-import { Model, DataTypes } from 'sequelize';
-import { checkSchema, ValidationChain } from "express-validator";
+import { DataTypes, Model } from 'sequelize';
+import { checkSchema, ValidationChain } from 'express-validator';
+import bcrypt from 'bcryptjs';
 
 const config = {
-  tableName: 'categories',
+  tableName: 'users',
   sequelize: sequelizeInstance,
 };
 
-class Category extends Model<Category> {
+class User extends Model<User> {
   public id!: number;
-  public title!: string;
-  public color!: string;
-
-  // Declare methods example
-  // verifyPassword: (password: string) => boolean;
+  public email!: string;
+  public password!: string;
 
   // timestamps
   public readonly createdDate!: Date;
@@ -24,18 +22,21 @@ class Category extends Model<Category> {
   };
 }
 
-Category.init(
+User.init(
   {
     id: {
       primaryKey: true,
       type: DataTypes.INTEGER,
       autoIncrement: true,
     },
-    title: {
+    email: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        isEmail: true,
+      },
     },
-    color: {
+    password: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -43,9 +44,17 @@ Category.init(
   config
 );
 
-export default Category;
+User.beforeCreate(async user => {
+  user.password = await bcrypt.hash(user.password, 10);
+});
 
-export const categorySchema: ValidationChain[] = checkSchema({
+User.afterCreate(user => {
+  user.password = '';
+});
+
+export default User;
+
+export const userSchema: ValidationChain[] = checkSchema({
   id: {
     in: ['params', 'query', 'body'],
     isInt: true,
@@ -54,18 +63,19 @@ export const categorySchema: ValidationChain[] = checkSchema({
       options: { nullable: true },
     },
   },
-  title: {
+  email: {
     in: ['body'],
     isString: true,
-    errorMessage: 'Invalid title',
+    isEmail: true,
+    errorMessage: 'Invalid Email',
   },
-  color: {
+  password: {
     in: ['body'],
     isString: true,
-    errorMessage: 'Invalid color',
+    errorMessage: 'Invalid password',
     isLength: {
-      errorMessage: 'Color must be between 3 and 6 chars long',
-      options: { min: 3, max: 6 },
+      errorMessage: 'Password must be at least 8 characters long',
+      options: { min: 8 },
     },
   },
 });

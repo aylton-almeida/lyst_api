@@ -1,35 +1,10 @@
 import * as express from 'express';
-import Category from '../models/category.model';
-import { checkSchema, ValidationChain } from 'express-validator';
+import Category, { categorySchema } from "../models/category.model";
 import { validate, idValidator } from '../utils/validation.utils';
 
 class CategoryController {
   public path = '/category';
   public router = express.Router();
-  public categorySchema: ValidationChain[] = checkSchema({
-    id: {
-      in: ['params', 'query', 'body'],
-      isInt: true,
-      errorMessage: 'Invalid Id',
-      optional: {
-        options: { nullable: true },
-      },
-    },
-    title: {
-      in: ['body'],
-      isString: true,
-      errorMessage: 'Invalid title',
-    },
-    color: {
-      in: ['body'],
-      isString: true,
-      errorMessage: 'Invalid color',
-      isLength: {
-        errorMessage: 'Color must be between 3 and 6 chars long',
-        options: { min: 3, max: 6 },
-      },
-    },
-  });
 
   constructor() {
     this.initializeRoutes();
@@ -38,8 +13,8 @@ class CategoryController {
   public initializeRoutes() {
     this.router.get(this.path, this.getCategories);
     this.router.get(`${this.path}/:id`, validate(idValidator), this.getCategory);
-    this.router.post(this.path, validate(this.categorySchema), this.createCategory);
-    this.router.put(this.path, validate(this.categorySchema), this.updateCategory);
+    this.router.post(this.path, validate(categorySchema), this.createCategory);
+    this.router.put(this.path, validate(categorySchema), this.updateCategory);
     this.router.delete(`${this.path}/:id`, validate(idValidator), this.deleteCategory);
   }
 
@@ -65,8 +40,7 @@ class CategoryController {
 
   createCategory = async (req: express.Request, res: express.Response) => {
     try {
-      const { title, color } = req.body;
-      const newCategory = await Category.create({ title, color });
+      const newCategory = await Category.create(req.body);
       res.send(newCategory);
     } catch (e) {
       res.status(500).send({ error: e.message });

@@ -7,10 +7,10 @@ export default abstract class TestUtils {
     return request(app)
       .get(path)
       .expect(res => {
-        expect(res.status).toBe(status);
         res.body.forEach((item: Category, index: number) => {
           expect(item).toMatchObject(expectedResponse[index]);
         });
+        expect(res.status).toBe(status);
       });
   }
 
@@ -18,8 +18,8 @@ export default abstract class TestUtils {
     return request(app)
       .get(path)
       .expect(res => {
-        expect(res.status).toBe(status);
         expect(res.body).toMatchObject(expectedResponse);
+        expect(res.status).toBe(status);
       });
   }
 
@@ -29,8 +29,8 @@ export default abstract class TestUtils {
       .send(body)
       .set({ Accept: 'application/json' })
       .expect(res => {
-        expect(res.status).toBe(status);
         expect(res.body).toMatchObject(expectedResponse);
+        expect(res.status).toBe(status);
       });
   }
 
@@ -40,8 +40,8 @@ export default abstract class TestUtils {
       .send(body)
       .set({ Accept: 'application/json' })
       .expect(res => {
-        expect(res.status).toBe(status);
         expect(res.body).toMatchObject(expectedResponse);
+        expect(res.status).toBe(status);
       });
   }
 
@@ -49,8 +49,8 @@ export default abstract class TestUtils {
     return request(app)
       .delete(path)
       .expect(res => {
-        expect(res.status).toBe(status);
         expect(res.body).toMatchObject(expectedResponse);
+        expect(res.status).toBe(status);
       });
   }
 }
