@@ -13,7 +13,12 @@
     "dev:watch": "nodemon",
     "lint": "tslint -c tslint.json 'src/**/*.ts'"
   },
-  "author": "Aylton Almeida",
+  "authors": [
+    {
+      "name": "Aylton Almeida",
+      "url": "github.com/stevreeper"
+    }
+  ],
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",

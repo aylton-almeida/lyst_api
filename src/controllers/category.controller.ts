@@ -1,7 +1,7 @@
 import * as express from 'express';
 import Category from '../models/category.model';
-import { checkSchema, param, ValidationChain } from 'express-validator';
-import { validate } from '../utils/validation.utils';
+import { checkSchema, ValidationChain } from 'express-validator';
+import { validate, idValidator } from '../utils/validation.utils';
 
 class CategoryController {
   public path = '/category';
@@ -30,7 +30,6 @@ class CategoryController {
       },
     },
   });
-  private idValidator: ValidationChain[] = [param('id', 'invalid Id').isInt()];
 
   constructor() {
     this.initializeRoutes();
@@ -38,10 +37,10 @@ class CategoryController {
 
   public initializeRoutes() {
     this.router.get(this.path, this.getCategories);
-    this.router.get(`${this.path}/:id`, validate(this.idValidator), this.getCategory);
+    this.router.get(`${this.path}/:id`, validate(idValidator), this.getCategory);
     this.router.post(this.path, validate(this.categorySchema), this.createCategory);
     this.router.put(this.path, validate(this.categorySchema), this.updateCategory);
-    this.router.delete(`${this.path}/:id`, validate(this.idValidator), this.deleteCategory);
+    this.router.delete(`${this.path}/:id`, validate(idValidator), this.deleteCategory);
   }
 
   getCategories = async (req: express.Request, res: express.Response) => {
