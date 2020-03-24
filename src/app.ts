@@ -7,7 +7,10 @@ const app = express();
 
 app.use(bodyParser.json());
 
-const controllers = [new CategoryController(), new AuthController()];
+const controllers = [
+  new AuthController(),
+  new CategoryController(),
+];
 
 controllers.forEach((controller: any) => {
   app.use('/', controller.router);
