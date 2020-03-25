@@ -1,4 +1,4 @@
-import User from '../models/user.model';
+import User from '../app/models/user.model';
 import TestUtils from '../utils/test.utils';
 import request from 'supertest';
 import app from '../app';
@@ -6,7 +6,7 @@ import app from '../app';
 let authToken: string;
 
 beforeAll(done => {
-  TestUtils.getAuthToken(done).end((err, response) => {
+  TestUtils.getAuthToken().end((err, response) => {
     authToken = response.body.token;
     done();
   });

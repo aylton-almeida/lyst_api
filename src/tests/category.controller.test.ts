@@ -1,10 +1,10 @@
 import TestUtils from '../utils/test.utils';
-import Category from '../models/category.model';
+import Category from '../app/models/category.model';
 
 let authToken: string;
 
 beforeAll(done => {
-  TestUtils.getAuthToken(done).end((err, response) => {
+  TestUtils.getAuthToken().end((err, response) => {
     authToken = response.body.token;
     done();
   });

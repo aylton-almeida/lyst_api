@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '../app';
-import Category from '../models/category.model';
+import Category from '../app/models/category.model';
 
 export default abstract class TestUtils {
   static testGetAll(path: string, expectedResponse: any[], status: number, token: string) {
