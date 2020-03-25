@@ -158,34 +158,26 @@ describe('Testing forgot password', () => {
   test('should return E-mail sent', done => {
     const expectedResponse = { msg: 'E-mail sent' };
     const body = { email: 'almeida@aylton.dev', isTest: true };
-    return request(app)
-      .post('/forgot_password')
-      .send(body)
-      .expect(res => {
-        expect(res.body).toMatchObject(expectedResponse);
-        expect(res.status).toBe(200);
-      })
-      .end(e => {
-        if (e) done(e);
-        done();
-      });
+    TestUtils.testUnauthenticatedRoutePost('forgot_password', expectedResponse, 200, body)
+      .then(() => done())
+      .catch(e => done(e));
   });
 
   test('should return invalid body', done => {
     const expectedResponse = { errors: [{ msg: 'Invalid Email' }] };
     const body = { user: 'almeida@aylton.dev', isTest: true };
-    return request(app)
-      .post('/forgot_password')
-      .send(body)
-      .expect(res => {
-        expect(res.body).toMatchObject(expectedResponse);
-        expect(res.status).toBe(422);
-      })
-      .end(e => {
-        if (e) done(e);
-        done();
-      });
+    TestUtils.testUnauthenticatedRoutePost('forgot_password', expectedResponse, 422, body)
+      .then(() => done())
+      .catch(e => done(e));
   });
+
+  test('should return no user found with email', done =>{
+    const expectedResponse = { errors: [{ msg: 'User not found' }] };
+    const body = { email: 'almeida@aylton.dev', isTest: true };
+    TestUtils.testUnauthenticatedRoutePost('forgot_password', expectedResponse, 404, body)
+      .then(() => done())
+      .catch(e => done(e));
+  })
 });
 
 async function initializeDB() {
