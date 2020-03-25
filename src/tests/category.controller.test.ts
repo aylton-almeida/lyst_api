@@ -41,7 +41,7 @@ describe('Testing all get operations', () => {
 
   test('should return invalid id', done => {
     const expectedResponse = {
-      errors: [{ value: 'a', msg: 'invalid Id', param: 'id' }],
+      errors: [{ value: 'a', msg: 'Invalid Id', param: 'id' }],
     };
     TestUtils.testGet('/category/a', expectedResponse, 422, authToken)
       .then(() => done())
@@ -124,7 +124,7 @@ describe('testing all delete operations', () => {
 
   test('should return invalid schema', done => {
     const expectedResponse = {
-      errors: [{ value: 'a', msg: 'invalid Id', param: 'id' }],
+      errors: [{ value: 'a', msg: 'Invalid Id', param: 'id' }],
     };
     TestUtils.testRouteDelete('/category/a', expectedResponse, 422, authToken)
       .then(() => done())
