@@ -1,5 +1,6 @@
-import sequelizeInstance from './';
+import sequelizeInstance from './index';
 import { Model, DataTypes } from 'sequelize';
+import { checkSchema, ValidationChain } from "express-validator";
 
 const config = {
   tableName: 'categories',
@@ -43,3 +44,28 @@ Category.init(
 );
 
 export default Category;
+
+export const categorySchema: ValidationChain[] = checkSchema({
+  id: {
+    in: ['params', 'query', 'body'],
+    isInt: true,
+    errorMessage: 'Invalid Id',
+    optional: {
+      options: { nullable: true },
+    },
+  },
+  title: {
+    in: ['body'],
+    isString: true,
+    errorMessage: 'Invalid title',
+  },
+  color: {
+    in: ['body'],
+    isString: true,
+    errorMessage: 'Invalid color',
+    isLength: {
+      errorMessage: 'Color must be between 3 and 6 chars long',
+      options: { min: 3, max: 6 },
+    },
+  },
+});

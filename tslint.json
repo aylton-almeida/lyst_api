@@ -1,22 +1,19 @@
 {
   "defaultSeverity": "error",
-  "extends": [
-    "tslint:recommended",
-    "tslint-config-prettier"
-  ],
+  "extends": ["tslint:recommended", "tslint-config-prettier"],
   "compilerOptions": {
-    "plugins": [
-      { "name": "tslint-language-service"}
-    ]
+    "plugins": [{ "name": "tslint-language-service" }]
   },
   "jsRules": {},
   "rules": {
     "interface-name": false,
     "no-console": false,
     "prettier": true,
-    "quotemark": [true, "single"]
+    "quotemark": [true, "single"],
+    "max-line-length": [
+      true,
+      80
+    ]
   },
-  "rulesDirectory": [
-    "tslint-plugin-prettier"
-  ]
+  "rulesDirectory": ["tslint-plugin-prettier"]
 }
