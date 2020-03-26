@@ -6,12 +6,25 @@ import bcrypt from 'bcryptjs';
 const config = {
   tableName: 'users',
   sequelize: sequelizeInstance,
+  defaultScope: {
+    attributes: { exclude: ['password', 'passwordResetToken', 'passwordResetExpire'] },
+  },
+  scopes: {
+    includePassword: {
+      attributes: { include: ['password'], exclude: ['passwordResetToken', 'passwordResetExpire']  },
+    },
+    includePasswordResets: {
+      attributes: { include: ['passwordResetToken', 'passwordResetExpire'], exclude: ['password'] },
+    },
+  },
 };
 
 class User extends Model<User> {
   public id!: number;
   public email!: string;
   public password!: string;
+  public passwordResetToken!: string;
+  public passwordResetExpire!: Date;
 
   // timestamps
   public readonly createdDate!: Date;
@@ -40,11 +53,19 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    passwordResetToken: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    passwordResetExpire: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   },
   config
 );
 
-User.beforeCreate(async user => {
+User.beforeSave(async user => {
   user.password = await bcrypt.hash(user.password, 10);
 });
 
@@ -68,6 +89,29 @@ export const userSchema: ValidationChain[] = checkSchema({
     isString: true,
     isEmail: true,
     errorMessage: 'Invalid Email',
+  },
+  password: {
+    in: ['body'],
+    isString: true,
+    errorMessage: 'Invalid password',
+    isLength: {
+      errorMessage: 'Password must be at least 8 characters long',
+      options: { min: 8 },
+    },
+  },
+});
+
+export const resetPassSchema = checkSchema({
+  email: {
+    in: ['body'],
+    isString: true,
+    isEmail: true,
+    errorMessage: 'Invalid Email',
+  },
+  token: {
+    in: ['body'],
+    isString: true,
+    errorMessage: 'Invalid Token',
   },
   password: {
     in: ['body'],

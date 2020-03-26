@@ -157,8 +157,8 @@ describe('Testing authorization', () => {
 describe('Testing forgot password', () => {
   test('should return E-mail sent', done => {
     const expectedResponse = { msg: 'E-mail sent' };
-    const body = { email: 'almeida@aylton.dev', isTest: true };
-    TestUtils.testUnauthenticatedRoutePost('forgot_password', expectedResponse, 200, body)
+    const body = { email: 'user1@email.com', isTest: true };
+    TestUtils.testUnauthenticatedRoutePost('/forgot_password', expectedResponse, 200, body)
       .then(() => done())
       .catch(e => done(e));
   });
@@ -166,18 +166,80 @@ describe('Testing forgot password', () => {
   test('should return invalid body', done => {
     const expectedResponse = { errors: [{ msg: 'Invalid Email' }] };
     const body = { user: 'almeida@aylton.dev', isTest: true };
-    TestUtils.testUnauthenticatedRoutePost('forgot_password', expectedResponse, 422, body)
+    TestUtils.testUnauthenticatedRoutePost('/forgot_password', expectedResponse, 422, body)
       .then(() => done())
       .catch(e => done(e));
   });
 
-  test('should return no user found with email', done =>{
-    const expectedResponse = { errors: [{ msg: 'User not found' }] };
+  test('should return no user found with email', done => {
+    const expectedResponse = { error: 'User not found' };
     const body = { email: 'almeida@aylton.dev', isTest: true };
-    TestUtils.testUnauthenticatedRoutePost('forgot_password', expectedResponse, 404, body)
+    TestUtils.testUnauthenticatedRoutePost('/forgot_password', expectedResponse, 404, body)
       .then(() => done())
       .catch(e => done(e));
-  })
+  });
+});
+
+describe('Testing reset password', () => {
+  let passResetToken: string;
+
+  beforeEach(done => {
+    TestUtils.getPassResetToken().end((err, response) => {
+      passResetToken = response.body.token;
+      done();
+    });
+  });
+
+  test('should reset password', done => {
+    const expectedResponse = { msg: 'Password updated' };
+    const body = {
+      email: 'user1@email.com',
+      password: 'newPassword',
+      token: passResetToken,
+    };
+    TestUtils.testUnauthenticatedRoutePost('/reset_password', expectedResponse, 200, body)
+      .then(() => done())
+      .catch(e => done(e));
+  });
+
+  test('should return user not found', done => {
+    const expectedResponse = { error: 'User not found' };
+    const body = {
+      email: 'user3@email.com',
+      password: 'newPassword',
+      token: passResetToken,
+    };
+    TestUtils.testUnauthenticatedRoutePost('/reset_password', expectedResponse, 404, body)
+      .then(() => done())
+      .catch(e => done(e));
+  });
+
+  test('should return invalid token', done => {
+    const expectedResponse = { error: 'Invalid Token' };
+    const body = {
+      email: 'user1@email.com',
+      password: 'newPassword',
+      token: 'invalid token',
+    };
+    TestUtils.testUnauthenticatedRoutePost('/reset_password', expectedResponse, 401, body)
+      .then(() => done())
+      .catch(e => done(e));
+  });
+
+  test('should return expired token', done => {
+    const now = new Date();
+    now.setHours(now.getHours() + 5);
+    jest.spyOn(Date, 'now').mockImplementation(() => 99999999999999);
+    const expectedResponse = { error: 'Token expired' };
+    const body = {
+      email: 'user1@email.com',
+      password: 'newPassword',
+      token: passResetToken,
+    };
+    TestUtils.testUnauthenticatedRoutePost('/reset_password', expectedResponse, 400, body)
+      .then(() => done())
+      .catch(e => done(e));
+  });
 });
 
 async function initializeDB() {

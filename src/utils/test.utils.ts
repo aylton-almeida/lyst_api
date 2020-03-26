@@ -95,4 +95,14 @@ export default abstract class TestUtils {
         password: 'password1',
       });
   }
+
+  static getPassResetToken() {
+    return request(app)
+      .post('/forgot_password')
+      .send({
+        email: 'user1@email.com',
+        isTest: true,
+      });
+  }
+
 }
