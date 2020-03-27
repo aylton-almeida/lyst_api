@@ -15,12 +15,9 @@ beforeEach(async () => {
 });
 
 describe('Testing all get operations', () => {
-  test('should return a list with all categories', done => {
-    const expectedResponse = [
-      { title: 'Category 1', color: 'ffffff' },
-      { title: 'Category 2', color: '000000' },
-    ];
-    TestUtils.testGetAll('/category', expectedResponse, 200, authToken)
+  test('should return a list with all categories from the user', done => {
+    const expectedResponse = [{ title: 'Category 1', color: 'ffffff' }];
+    return TestUtils.testGetAll('/category', expectedResponse, 200, authToken)
       .then(() => done())
       .catch(e => done(e));
   });
@@ -51,7 +48,7 @@ describe('Testing all get operations', () => {
 
 describe('Testing all create operations', () => {
   test('should create category increasing id', done => {
-    const expectedResponse = { id: 3, title: 'category 3', color: 'ffffff' };
+    const expectedResponse = { id: 3, title: 'category 3', color: 'ffffff', userId: 1 };
     const body = { title: 'category 3', color: 'ffffff' };
     TestUtils.testRoutePost('/category', expectedResponse, 200, body, authToken)
       .then(() => done())
@@ -134,12 +131,16 @@ describe('testing all delete operations', () => {
 
 async function initializeDB() {
   await Category.destroy({ where: {}, force: true, restartIdentity: true, truncate: true });
-  await Category.create({
-    title: 'Category 1',
-    color: 'ffffff',
-  });
-  await Category.create({
-    title: 'Category 2',
-    color: '000000',
-  });
+  await Category.bulkCreate([
+    {
+      title: 'Category 1',
+      color: 'ffffff',
+      userId: 1
+    },
+    {
+      title: 'Category 2',
+      color: '000000',
+      userId: 2
+    },
+  ]);
 }

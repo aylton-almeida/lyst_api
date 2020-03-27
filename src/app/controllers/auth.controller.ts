@@ -5,7 +5,6 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import Mail from '../../services/mailer';
 import crypto from 'crypto';
-import { checkSchema } from 'express-validator';
 
 const authHash = process.env.AUTH_HASH || 'AUTH_HASH';
 

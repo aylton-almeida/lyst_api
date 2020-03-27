@@ -1,7 +1,8 @@
 import sequelizeInstance from './index';
-import { DataTypes, Model } from 'sequelize';
+import { Association, DataTypes, Model } from 'sequelize';
 import { checkSchema, ValidationChain } from 'express-validator';
 import bcrypt from 'bcryptjs';
+import Category from './category.model';
 
 const config = {
   tableName: 'users',
@@ -11,7 +12,7 @@ const config = {
   },
   scopes: {
     includePassword: {
-      attributes: { include: ['password'], exclude: ['passwordResetToken', 'passwordResetExpire']  },
+      attributes: { include: ['password'], exclude: ['passwordResetToken', 'passwordResetExpire'] },
     },
     includePasswordResets: {
       attributes: { include: ['passwordResetToken', 'passwordResetExpire'], exclude: ['password'] },
@@ -31,7 +32,7 @@ class User extends Model<User> {
   public readonly updatedOn!: Date;
 
   public static associations: {
-    // Add associations here
+    categories: Association<User, Category>;
   };
 }
 
@@ -64,6 +65,18 @@ User.init(
   },
   config
 );
+
+User.hasMany(Category, {
+  sourceKey: 'id',
+  foreignKey: 'userId',
+  as: 'categories',
+  onDelete: 'CASCADE',
+  onUpdate: 'CASCADE',
+});
+
+User.beforeBulkCreate(async users => {
+  for (const user of users) user.password = await bcrypt.hash(user.password, 10);
+});
 
 User.beforeSave(async user => {
   user.password = await bcrypt.hash(user.password, 10);

@@ -1,6 +1,7 @@
 import sequelizeInstance from './index';
-import { Model, DataTypes } from 'sequelize';
-import { checkSchema, ValidationChain } from "express-validator";
+import { Model, DataTypes, Association } from 'sequelize';
+import { checkSchema, ValidationChain } from 'express-validator';
+import User from './user.model';
 
 const config = {
   tableName: 'categories',
@@ -11,6 +12,7 @@ class Category extends Model<Category> {
   public id!: number;
   public title!: string;
   public color!: string;
+  public userId!: number;
 
   // Declare methods example
   // verifyPassword: (password: string) => boolean;
@@ -18,10 +20,6 @@ class Category extends Model<Category> {
   // timestamps
   public readonly createdDate!: Date;
   public readonly updatedOn!: Date;
-
-  public static associations: {
-    // Add associations here
-  };
 }
 
 Category.init(
@@ -37,6 +35,10 @@ Category.init(
     },
     color: {
       type: DataTypes.STRING,
+      allowNull: false,
+    },
+    userId: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
   },
