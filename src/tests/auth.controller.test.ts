@@ -14,7 +14,10 @@ beforeAll(done => {
 
 describe('Testing all create operations', () => {
   test('should create a new user with auth token', done => {
-    const expectedResponse = { newUser: { email: 'user3@email.com' } };
+    const expectedResponse = {
+      user: { email: 'user3@email.com' },
+      category: { title: 'Not Categorized', color: 848484 },
+    };
     const body = { email: 'user3@email.com', password: 'password3' };
     return request(app)
       .post('/user')
@@ -77,7 +80,7 @@ describe('Testing authentication', () => {
   test('should return user not found', done => {
     const expectedResponse = { error: 'User not found' };
     const body = { email: 'unregistered@email.com', password: 'password3' };
-    TestUtils.testUnauthenticatedRoutePost('/auth', expectedResponse, 400, body)
+    TestUtils.testUnauthenticatedRoutePost('/auth', expectedResponse, 404, body)
       .then(() => done())
       .catch(e => done(e));
   });

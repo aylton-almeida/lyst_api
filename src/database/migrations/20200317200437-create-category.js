@@ -14,7 +14,7 @@ module.exports = {
         allowNull: false,
       },
       color: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
         allowNull: false,
       },
       createdAt: {

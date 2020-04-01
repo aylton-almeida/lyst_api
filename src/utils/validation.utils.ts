@@ -1,4 +1,4 @@
-import { body, param, ValidationChain, validationResult } from "express-validator";
+import { body, param, ValidationChain, validationResult } from 'express-validator';
 import { Request, Response, NextFunction } from 'express';
 
 type RouteHandler = (req: Request, res: Response, next: NextFunction) => Promise<void>;
@@ -20,3 +20,4 @@ export const validate = (validations: ValidationChain[]): RouteHandler => {
 
 export const idValidator: ValidationChain[] = [param('id', 'Invalid Id').isInt()];
 export const emailValidator: ValidationChain[] = [body('email', 'Invalid Email').isEmail()];
+export const authTokenValidator: ValidationChain[] = [body('token', 'Invalid Token').isString()];

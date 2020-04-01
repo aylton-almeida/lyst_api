@@ -11,7 +11,7 @@ const config = {
 class Category extends Model<Category> {
   public id!: number;
   public title!: string;
-  public color!: string;
+  public color!: number;
   public userId!: number;
 
   // Declare methods example
@@ -34,7 +34,7 @@ Category.init(
       allowNull: false,
     },
     color: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     userId: {
@@ -63,11 +63,7 @@ export const categorySchema: ValidationChain[] = checkSchema({
   },
   color: {
     in: ['body'],
-    isString: true,
+    isInt: true,
     errorMessage: 'Invalid color',
-    isLength: {
-      errorMessage: 'Color must be between 3 and 6 chars long',
-      options: { min: 3, max: 6 },
-    },
   },
 });
