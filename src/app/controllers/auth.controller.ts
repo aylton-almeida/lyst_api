@@ -39,7 +39,7 @@ class AuthController {
       const user = await User.create(req.body);
       const category = await Category.create({
         title: 'Not Categorized',
-        color: '848484',
+        color: '4287669422',
         userId: user.id,
       });
       return res.send({
@@ -54,8 +54,6 @@ class AuthController {
 
   authenticateUser = async (req: express.Request, res: express.Response) => {
     const { email, password } = req.body;
-
-    console.log(email, password);
 
     try {
       const user = await User.scope('includePassword').findOne({ where: { email } });
@@ -80,7 +78,6 @@ class AuthController {
       else {
         // @ts-ignore
         const user = await User.findByPk(decoded.id);
-        console.log(user);
         return res.send({ user });
       }
     });

@@ -27,7 +27,7 @@ class CategoryController {
   getCategories = async (req: express.Request, res: express.Response) => {
     const { userId } = req.body;
     try {
-      const categories = await Category.findAll({ where: { id: userId } });
+      const categories = await Category.findAll({ where: { userId } });
       return res.send(categories);
     } catch (e) {
       return res.status(500).send({ error: e.message });
@@ -54,6 +54,7 @@ class CategoryController {
     }
   };
 
+  //TODO: Shouldn't be able to edit 'Not Categorized'
   updateCategory = async (req: express.Request, res: express.Response) => {
     try {
       const { id, title, color } = req.body;

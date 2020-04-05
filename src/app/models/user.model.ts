@@ -28,8 +28,8 @@ class User extends Model<User> {
   public passwordResetExpire!: Date;
 
   // timestamps
-  public readonly createdDate!: Date;
-  public readonly updatedOn!: Date;
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
 
   public static associations: {
     categories: Association<User, Category>;

@@ -18,8 +18,8 @@ class Category extends Model<Category> {
   // verifyPassword: (password: string) => boolean;
 
   // timestamps
-  public readonly createdDate!: Date;
-  public readonly updatedOn!: Date;
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
 }
 
 Category.init(
@@ -34,7 +34,7 @@ Category.init(
       allowNull: false,
     },
     color: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DOUBLE,
       allowNull: false,
     },
     userId: {
@@ -63,7 +63,7 @@ export const categorySchema: ValidationChain[] = checkSchema({
   },
   color: {
     in: ['body'],
-    isInt: true,
+    isFloat: true,
     errorMessage: 'Invalid color',
   },
 });
