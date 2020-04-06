@@ -1,11 +1,11 @@
 import * as express from 'express';
-import { emailValidator, validate } from '../../utils/validation.utils';
+import { authTokenValidator, emailValidator, validate } from '../../utils/validation.utils';
 import User, { resetPassSchema, userSchema } from '../models/user.model';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import jwt, { JsonWebTokenError } from 'jsonwebtoken';
 import Mail from '../../services/mailer';
 import crypto from 'crypto';
-import { checkSchema } from 'express-validator';
+import Category from '../models/category.model';
 
 const authHash = process.env.AUTH_HASH || 'AUTH_HASH';
 
@@ -19,6 +19,7 @@ class AuthController {
   public initializeRoutes() {
     this.router.post('/user', validate(userSchema), this.createUser);
     this.router.post('/auth', validate(userSchema), this.authenticateUser);
+    this.router.post('/validateToken', validate(authTokenValidator), this.validateAuthToken);
     this.router.post('/forgot_password', validate(emailValidator), this.forgotPassword);
     this.router.post('/reset_password', validate(resetPassSchema), this.resetPassword);
   }
@@ -35,10 +36,16 @@ class AuthController {
       if (await User.findOne({ where: { email } }))
         return res.status(422).send({ error: 'Email already in use' });
 
-      const newUser = await User.create(req.body);
+      const user = await User.create(req.body);
+      const category = await Category.create({
+        title: 'Not Categorized',
+        color: '4287669422',
+        userId: user.id,
+      });
       return res.send({
-        newUser,
-        token: AuthController.generateAuthToken(newUser.id),
+        user,
+        category,
+        token: AuthController.generateAuthToken(user.id),
       });
     } catch (e) {
       return res.status(500).send({ error: e.message });
@@ -51,7 +58,7 @@ class AuthController {
     try {
       const user = await User.scope('includePassword').findOne({ where: { email } });
 
-      if (!user) return res.status(400).send({ error: 'User not found' });
+      if (!user) return res.status(404).send({ error: 'User not found' });
 
       if (!(await bcrypt.compare(password, user!.password)))
         return res.status(400).send({ error: 'Invalid password' });
@@ -62,6 +69,18 @@ class AuthController {
     } catch (e) {
       return res.status(500).send({ error: e.message });
     }
+  };
+
+  validateAuthToken = async (req: express.Request, res: express.Response) => {
+    const { token } = req.body;
+    jwt.verify(token, authHash, async (err: JsonWebTokenError, decoded: object) => {
+      if (err) return res.status(401).send({ error: 'Token invalid' });
+      else {
+        // @ts-ignore
+        const user = await User.findByPk(decoded.id);
+        return res.send({ user });
+      }
+    });
   };
 
   forgotPassword = async (req: express.Request, res: express.Response) => {

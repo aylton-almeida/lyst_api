@@ -1,6 +1,7 @@
 import sequelizeInstance from './index';
-import { Model, DataTypes } from 'sequelize';
-import { checkSchema, ValidationChain } from "express-validator";
+import { Model, DataTypes, Association } from 'sequelize';
+import { checkSchema, ValidationChain } from 'express-validator';
+import User from './user.model';
 
 const config = {
   tableName: 'categories',
@@ -10,18 +11,15 @@ const config = {
 class Category extends Model<Category> {
   public id!: number;
   public title!: string;
-  public color!: string;
+  public color!: number;
+  public userId!: number;
 
   // Declare methods example
   // verifyPassword: (password: string) => boolean;
 
   // timestamps
-  public readonly createdDate!: Date;
-  public readonly updatedOn!: Date;
-
-  public static associations: {
-    // Add associations here
-  };
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
 }
 
 Category.init(
@@ -36,7 +34,11 @@ Category.init(
       allowNull: false,
     },
     color: {
-      type: DataTypes.STRING,
+      type: DataTypes.DOUBLE,
+      allowNull: false,
+    },
+    userId: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
   },
@@ -61,11 +63,7 @@ export const categorySchema: ValidationChain[] = checkSchema({
   },
   color: {
     in: ['body'],
-    isString: true,
+    isFloat: true,
     errorMessage: 'Invalid color',
-    isLength: {
-      errorMessage: 'Color must be between 3 and 6 chars long',
-      options: { min: 3, max: 6 },
-    },
   },
 });

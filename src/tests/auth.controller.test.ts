@@ -12,13 +12,12 @@ beforeAll(done => {
   });
 });
 
-beforeEach(async () => {
-  await initializeDB();
-});
-
 describe('Testing all create operations', () => {
   test('should create a new user with auth token', done => {
-    const expectedResponse = { newUser: { id: 3, email: 'user3@email.com' } };
+    const expectedResponse = {
+      user: { email: 'user3@email.com' },
+      category: { title: 'Not Categorized', color: 848484 },
+    };
     const body = { email: 'user3@email.com', password: 'password3' };
     return request(app)
       .post('/user')
@@ -30,7 +29,8 @@ describe('Testing all create operations', () => {
         expect(res.status).toBe(200);
       })
       .then(() => done())
-      .catch(e => done(e));
+      .catch(e => done(e))
+      .finally(() => User.destroy({ where: { email: 'user3@email.com' } }));
   });
 
   test('should return that the password is two small', done => {
@@ -61,7 +61,7 @@ describe('Testing all create operations', () => {
 });
 
 describe('Testing authentication', () => {
-  test('should return the authenticated user`and hash', done => {
+  test('should return the authenticated user and hash', done => {
     const expectedResponse = { user: { email: 'user1@email.com', password: '' } };
     const body = { email: 'user1@email.com', password: 'password1' };
     return request(app)
@@ -79,8 +79,8 @@ describe('Testing authentication', () => {
 
   test('should return user not found', done => {
     const expectedResponse = { error: 'User not found' };
-    const body = { email: 'user3@email.com', password: 'password3' };
-    TestUtils.testUnauthenticatedRoutePost('/auth', expectedResponse, 400, body)
+    const body = { email: 'unregistered@email.com', password: 'password3' };
+    TestUtils.testUnauthenticatedRoutePost('/auth', expectedResponse, 404, body)
       .then(() => done())
       .catch(e => done(e));
   });
@@ -144,8 +144,9 @@ describe('Testing authorization', () => {
       .get('/category')
       .set('Authorization', `Bearer ${authToken}`)
       .expect(response => {
-        expect(response.status).toBe(200);
+        console.log(response.body);
         expect(response.type).toBe('application/json');
+        expect(response.status).toBe(200);
       })
       .end(e => {
         if (e) done(e);
@@ -165,7 +166,7 @@ describe('Testing forgot password', () => {
 
   test('should return invalid body', done => {
     const expectedResponse = { errors: [{ msg: 'Invalid Email' }] };
-    const body = { user: 'almeida@aylton.dev', isTest: true };
+    const body = { user: 'user1@email.com', isTest: true };
     TestUtils.testUnauthenticatedRoutePost('/forgot_password', expectedResponse, 422, body)
       .then(() => done())
       .catch(e => done(e));
@@ -193,7 +194,7 @@ describe('Testing reset password', () => {
   test('should reset password', done => {
     const expectedResponse = { msg: 'Password updated' };
     const body = {
-      email: 'user1@email.com',
+      email: 'user2@email.com',
       password: 'newPassword',
       token: passResetToken,
     };
@@ -205,7 +206,7 @@ describe('Testing reset password', () => {
   test('should return user not found', done => {
     const expectedResponse = { error: 'User not found' };
     const body = {
-      email: 'user3@email.com',
+      email: 'unregistered@email.com',
       password: 'newPassword',
       token: passResetToken,
     };
@@ -217,7 +218,7 @@ describe('Testing reset password', () => {
   test('should return invalid token', done => {
     const expectedResponse = { error: 'Invalid Token' };
     const body = {
-      email: 'user1@email.com',
+      email: 'user2@email.com',
       password: 'newPassword',
       token: 'invalid token',
     };
@@ -232,7 +233,7 @@ describe('Testing reset password', () => {
     jest.spyOn(Date, 'now').mockImplementation(() => 99999999999999);
     const expectedResponse = { error: 'Token expired' };
     const body = {
-      email: 'user1@email.com',
+      email: 'user2@email.com',
       password: 'newPassword',
       token: passResetToken,
     };
@@ -241,9 +242,3 @@ describe('Testing reset password', () => {
       .catch(e => done(e));
   });
 });
-
-async function initializeDB() {
-  await User.destroy({ where: {}, force: true, restartIdentity: true, truncate: true });
-  await User.create({ email: 'user1@email.com', password: 'password1' });
-  await User.create({ email: 'user2@email.com', password: 'password2' });
-}

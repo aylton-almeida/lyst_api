@@ -25,8 +25,12 @@ class CategoryController {
   }
 
   getCategories = async (req: express.Request, res: express.Response) => {
+    const { userId } = req.body;
     try {
-      const categories = await Category.findAll();
+      const categories = await Category.findAll({
+        where: { userId },
+        order: [['updatedAt', 'DESC']],
+      });
       return res.send(categories);
     } catch (e) {
       return res.status(500).send({ error: e.message });

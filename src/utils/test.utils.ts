@@ -1,6 +1,5 @@
 import request from 'supertest';
 import app from '../app';
-import Category from '../app/models/category.model';
 
 export default abstract class TestUtils {
   static testGetAll(path: string, expectedResponse: any[], status: number, token: string) {
@@ -8,7 +7,8 @@ export default abstract class TestUtils {
       .get(path)
       .set('Authorization', `Bearer ${token}`)
       .expect(res => {
-        res.body.forEach((item: Category, index: number) => {
+        expect(res.body.length).toEqual(expectedResponse.length);
+        res.body.forEach((item: any, index: number) => {
           expect(item).toMatchObject(expectedResponse[index]);
         });
         expect(res.status).toBe(status);
@@ -100,9 +100,8 @@ export default abstract class TestUtils {
     return request(app)
       .post('/forgot_password')
       .send({
-        email: 'user1@email.com',
+        email: 'user2@email.com',
         isTest: true,
       });
   }
-
 }
