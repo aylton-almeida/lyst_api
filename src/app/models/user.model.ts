@@ -3,6 +3,7 @@ import { Association, DataTypes, Model } from 'sequelize';
 import { checkSchema, ValidationChain } from 'express-validator';
 import bcrypt from 'bcryptjs';
 import Category from './category.model';
+import Note from './note.model';
 
 const config = {
   tableName: 'users',
@@ -20,7 +21,7 @@ const config = {
   },
 };
 
-class User extends Model<User> {
+class User extends Model {
   public id!: number;
   public email!: string;
   public password!: string;
@@ -33,6 +34,7 @@ class User extends Model<User> {
 
   public static associations: {
     categories: Association<User, Category>;
+    notes: Association<User, Note>;
   };
 }
 
@@ -70,6 +72,14 @@ User.hasMany(Category, {
   sourceKey: 'id',
   foreignKey: 'userId',
   as: 'categories',
+  onDelete: 'CASCADE',
+  onUpdate: 'CASCADE',
+});
+
+User.hasMany(Note, {
+  sourceKey: 'id',
+  foreignKey: 'userId',
+  as: 'notes',
   onDelete: 'CASCADE',
   onUpdate: 'CASCADE',
 });

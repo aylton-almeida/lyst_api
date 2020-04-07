@@ -22,6 +22,13 @@ describe('Testing all get operations', () => {
       .catch(e => done(e));
   });
 
+  test('should return every category with the notes count', done => {
+    const expectedResponse = [{ title: 'Category 1', color: 555555, notesCount: 2 }];
+    return TestUtils.testGetAll('/category', expectedResponse, 200, authToken)
+      .then(() => done())
+      .catch(e => done(e));
+  });
+
   test('should return the first category', done => {
     const expectedResponse = { title: 'Category 1', color: 555555 };
     TestUtils.testGet('/category/1', expectedResponse, 200, authToken)

@@ -2,6 +2,8 @@ import * as express from 'express';
 import Category, { categorySchema } from '../models/category.model';
 import { validate, idValidator } from '../../utils/validation.utils';
 import authMiddleware from '../middlewares/auth.middleware';
+import Note from '../models/note.model';
+import Sequelize from 'sequelize';
 
 class CategoryController {
   public path = '/category';
@@ -27,9 +29,13 @@ class CategoryController {
   getCategories = async (req: express.Request, res: express.Response) => {
     const { userId } = req.body;
     try {
+      //TODO: Get number of notes
       const categories = await Category.findAll({
         where: { userId },
         order: [['updatedAt', 'DESC']],
+        attributes: { include: [[Sequelize.fn('COUNT', Sequelize.col('notes.id')), 'notesCount']] },
+        include: [{ association: Category.associations.notes, attributes: [] }],
+        group: ['Category.id', 'notes.id'],
       });
       return res.send(categories);
     } catch (e) {
