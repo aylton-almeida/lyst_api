@@ -1,8 +1,6 @@
-import sequelizeInstance from './index';
+import sequelizeInstance from '../../database';
 import { DataTypes, Model } from 'sequelize';
 import { checkSchema, ValidationChain } from 'express-validator';
-import Category from './category.model';
-import User from './user.model';
 
 const config = {
   tableName: 'notes',

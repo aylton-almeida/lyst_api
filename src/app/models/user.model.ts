@@ -1,4 +1,4 @@
-import sequelizeInstance from './index';
+import sequelizeInstance from '../../database';
 import { Association, DataTypes, Model } from 'sequelize';
 import { checkSchema, ValidationChain } from 'express-validator';
 import bcrypt from 'bcryptjs';
@@ -67,22 +67,6 @@ User.init(
   },
   config
 );
-
-User.hasMany(Category, {
-  sourceKey: 'id',
-  foreignKey: 'userId',
-  as: 'categories',
-  onDelete: 'CASCADE',
-  onUpdate: 'CASCADE',
-});
-
-User.hasMany(Note, {
-  sourceKey: 'id',
-  foreignKey: 'userId',
-  as: 'notes',
-  onDelete: 'CASCADE',
-  onUpdate: 'CASCADE',
-});
 
 User.beforeBulkCreate(async users => {
   for (const user of users) user.password = await bcrypt.hash(user.password, 10);

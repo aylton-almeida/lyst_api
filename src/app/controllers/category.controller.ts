@@ -2,8 +2,8 @@ import * as express from 'express';
 import Category, { categorySchema } from '../models/category.model';
 import { validate, idValidator } from '../../utils/validation.utils';
 import authMiddleware from '../middlewares/auth.middleware';
-import Note from '../models/note.model';
 import Sequelize from 'sequelize';
+import models from '../models';
 
 class CategoryController {
   public path = '/category';
@@ -29,13 +29,12 @@ class CategoryController {
   getCategories = async (req: express.Request, res: express.Response) => {
     const { userId } = req.body;
     try {
-      //TODO: Get number of notes
-      const categories = await Category.findAll({
+      const categories = await models.category.findAll({
         where: { userId },
         order: [['updatedAt', 'DESC']],
-        attributes: { include: [[Sequelize.fn('COUNT', Sequelize.col('notes.id')), 'notesCount']] },
+        attributes: { include: [[Sequelize.fn('COUNT', Sequelize.col('notes.categoryId')), 'notesCount']] },
         include: [{ association: Category.associations.notes, attributes: [] }],
-        group: ['Category.id', 'notes.id'],
+        group: ['Category.id', 'notes.categoryId'],
       });
       return res.send(categories);
     } catch (e) {
@@ -46,7 +45,7 @@ class CategoryController {
   getCategory = async (req: express.Request, res: express.Response) => {
     try {
       const { id } = req.params;
-      const category = await Category.findByPk(id);
+      const category = await models.category.findByPk(id);
       if (category) return res.send(category);
       else return res.status(404).send({ error: 'Category not found' });
     } catch (e) {
@@ -56,7 +55,7 @@ class CategoryController {
 
   createCategory = async (req: express.Request, res: express.Response) => {
     try {
-      const newCategory = await Category.create(req.body);
+      const newCategory = await models.category.create(req.body);
       return res.send(newCategory);
     } catch (e) {
       return res.status(500).send({ error: e.message });
@@ -66,7 +65,7 @@ class CategoryController {
   updateCategory = async (req: express.Request, res: express.Response) => {
     try {
       const { id, title, color } = req.body;
-      const [numUpdates] = await Category.update(
+      const [numUpdates] = await models.category.update(
         { title, color },
         {
           where: { id },
@@ -82,7 +81,7 @@ class CategoryController {
   deleteCategory = async (req: express.Request, res: express.Response) => {
     try {
       const { id } = req.params;
-      const numDestroyed = await Category.destroy({ where: { id } });
+      const numDestroyed = await models.category.destroy({ where: { id } });
       if (numDestroyed === 1) return res.send({ msg: 'Category deleted' });
       else return res.status(404).send({ error: 'Category not found' });
     } catch (e) {

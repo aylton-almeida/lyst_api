@@ -1,6 +1,7 @@
 import * as express from 'express';
 import authMiddleware from '../middlewares/auth.middleware';
-import Note from '../models/note.model';
+import Category from '../models/category.model';
+import models from '../models';
 
 class NoteController {
   public path = '/note';
@@ -16,17 +17,19 @@ class NoteController {
   }
 
   public initializeRoutes() {
-    this.router.get(this.path, this.getNotes);
+    this.router.get(this.path, this.getAllNotes);
     this.router.post('/categoryNotes', this.getCategoryNotes);
   }
 
-  getNotes = async (req: express.Request, res: express.Response) => {
+  getAllNotes = async (req: express.Request, res: express.Response) => {
     const { userId } = req.body;
 
     try {
-      const notes = await Note.findAll({
+      const notes = await models.note.findAll({
         where: { userId },
         order: [['updatedAt', 'DESC']],
+        include: [{ model: Category, attributes: ['color'] }],
+        raw: true
       });
       return res.send(notes);
     } catch (e) {
@@ -36,6 +39,17 @@ class NoteController {
 
   getCategoryNotes = async (req: express.Request, res: express.Response) => {
     const { userId, categoryId } = req.body;
+    try {
+      const notes = await models.note.findAll({
+        where: { userId, categoryId },
+        order: [['updatedAt', 'DESC']],
+        include: [{ model: Category, attributes: ['color'] }],
+        raw: true
+      });
+      return res.send(notes);
+    } catch (e) {
+      return res.status(500).send({ error: e.message });
+    }
   };
 }
 

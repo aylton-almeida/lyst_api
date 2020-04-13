@@ -1,8 +1,7 @@
-import sequelizeInstance from './index';
+import sequelizeInstance from '../../database';
 import { Model, DataTypes, Association } from 'sequelize';
 import { checkSchema, ValidationChain } from 'express-validator';
 import Note from './note.model';
-import User from './user.model';
 
 const config = {
   tableName: 'categories',
@@ -18,6 +17,10 @@ class Category extends Model {
   // timestamps
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
+
+  public static associations: {
+    notes: Association<Category, Note>;
+  };
 }
 
 Category.init(
@@ -42,14 +45,6 @@ Category.init(
   },
   config
 );
-
-Category.hasMany(Note, {
-  sourceKey: 'id',
-  foreignKey: 'categoryId',
-  as: 'notes',
-  onDelete: 'CASCADE',
-  onUpdate: 'CASCADE',
-});
 
 export default Category;
 

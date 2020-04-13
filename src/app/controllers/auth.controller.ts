@@ -1,11 +1,12 @@
 import * as express from 'express';
 import { authTokenValidator, emailValidator, validate } from '../../utils/validation.utils';
-import User, { resetPassSchema, userSchema } from '../models/user.model';
+import { resetPassSchema, userSchema } from '../models/user.model';
 import bcrypt from 'bcryptjs';
 import jwt, { JsonWebTokenError } from 'jsonwebtoken';
 import Mail from '../../services/mailer';
 import crypto from 'crypto';
 import Category from '../models/category.model';
+import models from '../models';
 
 const authHash = process.env.AUTH_HASH || 'AUTH_HASH';
 
@@ -33,10 +34,10 @@ class AuthController {
   createUser = async (req: express.Request, res: express.Response) => {
     const { email } = req.body;
     try {
-      if (await User.findOne({ where: { email } }))
+      if (await models.user.findOne({ where: { email } }))
         return res.status(422).send({ error: 'Email already in use' });
 
-      const user = await User.create(req.body);
+      const user = await models.user.create(req.body);
       const category = await Category.create({
         title: 'Not Categorized',
         color: '4287669422',
@@ -56,7 +57,7 @@ class AuthController {
     const { email, password } = req.body;
 
     try {
-      const user = await User.scope('includePassword').findOne({ where: { email } });
+      const user = await models.user.scope('includePassword').findOne({ where: { email } });
 
       if (!user) return res.status(404).send({ error: 'User not found' });
 
@@ -77,7 +78,7 @@ class AuthController {
       if (err) return res.status(401).send({ error: 'Token invalid' });
       else {
         // @ts-ignore
-        const user = await User.findByPk(decoded.id);
+        const user = await models.user.findByPk(decoded.id);
         return res.send({ user });
       }
     });
@@ -87,7 +88,7 @@ class AuthController {
     const { email, isTest } = req.body;
 
     try {
-      const user = await User.findOne({ where: { email } });
+      const user = await models.user.findOne({ where: { email } });
 
       if (!user) return res.status(404).send({ error: 'User not found' });
 
@@ -96,7 +97,7 @@ class AuthController {
       const now = new Date();
       now.setHours(now.getHours() + 1);
 
-      await User.update(
+      await models.user.update(
         {
           passwordResetToken: token,
           passwordResetExpire: now,
@@ -118,7 +119,7 @@ class AuthController {
     const { email, token, password } = req.body;
 
     try {
-      const user = await User.scope('includePasswordResets').findOne({ where: { email } });
+      const user = await models.user.scope('includePasswordResets').findOne({ where: { email } });
 
       if (!user) return res.status(404).send({ error: 'User not found' });
 

@@ -12,6 +12,8 @@ beforeAll(done => {
   });
 });
 
+beforeEach(() => jest.resetAllMocks());
+
 describe('Testing all create operations', () => {
   test('should create a new user with auth token', done => {
     const expectedResponse = {

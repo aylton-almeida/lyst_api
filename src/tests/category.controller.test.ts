@@ -1,5 +1,4 @@
 import TestUtils from '../utils/test.utils';
-import Category from '../app/models/category.model';
 
 let authToken: string;
 
@@ -10,9 +9,7 @@ beforeAll(done => {
   });
 });
 
-beforeEach(async () => {
-  await initializeDB();
-});
+beforeEach(async () => jest.resetAllMocks());
 
 describe('Testing all get operations', () => {
   test('should return a list with all categories from the user', done => {
@@ -23,7 +20,7 @@ describe('Testing all get operations', () => {
   });
 
   test('should return every category with the notes count', done => {
-    const expectedResponse = [{ title: 'Category 1', color: 555555, notesCount: 2 }];
+    const expectedResponse = [{ title: 'Category 1', color: 555555, notesCount: '1' }];
     return TestUtils.testGetAll('/category', expectedResponse, 200, authToken)
       .then(() => done())
       .catch(e => done(e));
@@ -130,19 +127,8 @@ describe('testing all delete operations', () => {
       .catch(e => done(e));
   });
 });
-
-async function initializeDB() {
-  await Category.destroy({ where: {}, force: true, restartIdentity: true, truncate: true });
-  await Category.bulkCreate([
-    {
-      title: 'Category 1',
-      color: 555555,
-      userId: 1,
-    },
-    {
-      title: 'Category 2',
-      color: 757575,
-      userId: 2,
-    },
-  ]);
-}
+//
+// async function initializeDB() {
+//   await Category.destroy({ where: {}, force: true, restartIdentity: true, truncate: true });
+//   await Category.bulkCreate([]);
+// }
