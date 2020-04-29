@@ -38,7 +38,7 @@ class AuthController {
         return res.status(422).send({ error: 'Email already in use' });
 
       const user = await models.user.create(req.body);
-      const category = await Category.create({
+      const category = await models.category.create({
         title: 'Not Categorized',
         color: '4287669422',
         userId: user.id,
@@ -102,7 +102,7 @@ class AuthController {
           passwordResetToken: token,
           passwordResetExpire: now,
         },
-        { where: { id: user.id } }
+        { where: { id: user.id } },
       );
 
       Mail.to = email;

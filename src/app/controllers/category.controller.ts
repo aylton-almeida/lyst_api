@@ -32,7 +32,9 @@ class CategoryController {
       const categories = await models.category.findAll({
         where: { userId },
         order: [['updatedAt', 'DESC']],
-        attributes: { include: [[Sequelize.fn('COUNT', Sequelize.col('notes.categoryId')), 'notesCount']] },
+        attributes: {
+          include: [[Sequelize.fn('COUNT', Sequelize.col('notes.categoryId')), 'notesCount']],
+        },
         include: [{ association: Category.associations.notes, attributes: [] }],
         group: ['Category.id', 'notes.categoryId'],
       });
@@ -69,9 +71,9 @@ class CategoryController {
         { title, color },
         {
           where: { id },
-        }
+        },
       );
-      if (numUpdates === 1) return res.send({ msg: 'Category updated' });
+      if (numUpdates >= 1) return res.send({ msg: 'Category updated' });
       else return res.status(404).send({ error: 'Category not found' });
     } catch (e) {
       return res.status(500).send({ error: e.message });
@@ -82,7 +84,7 @@ class CategoryController {
     try {
       const { id } = req.params;
       const numDestroyed = await models.category.destroy({ where: { id } });
-      if (numDestroyed === 1) return res.send({ msg: 'Category deleted' });
+      if (numDestroyed >= 1) return res.send({ msg: 'Category deleted' });
       else return res.status(404).send({ error: 'Category not found' });
     } catch (e) {
       console.log(e);
