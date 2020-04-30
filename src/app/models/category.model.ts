@@ -43,7 +43,7 @@ Category.init(
       allowNull: false,
     },
   },
-  config
+  config,
 );
 
 export default Category;

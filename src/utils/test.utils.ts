@@ -93,7 +93,7 @@ export default abstract class TestUtils {
     expectedResponse: any,
     status: number,
     body: object,
-    token: string
+    token: string,
   ) {
     return request(app)
       .post(path)
@@ -110,7 +110,7 @@ export default abstract class TestUtils {
     path: string,
     expectedResponse: any,
     status: number,
-    body: object
+    body: object,
   ) {
     return request(app)
       .post(path)
@@ -127,7 +127,7 @@ export default abstract class TestUtils {
     expectedResponse: any,
     status: number,
     body: object,
-    token: string
+    token: string,
   ) {
     return request(app)
       .put(path)

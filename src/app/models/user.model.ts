@@ -65,7 +65,7 @@ User.init(
       allowNull: true,
     },
   },
-  config
+  config,
 );
 
 User.beforeBulkCreate(async users => {
