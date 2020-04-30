@@ -1,29 +1,26 @@
 import sequelizeInstance from '../../database';
-import { Model, DataTypes, Association } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import { checkSchema, ValidationChain } from 'express-validator';
-import Note from './note.model';
+import Category from './category.model';
 
 const config = {
-  tableName: 'categories',
+  tableName: 'notes',
   sequelize: sequelizeInstance,
 };
 
-class Category extends Model {
+class Note extends Model {
   public id!: number;
   public title!: string;
-  public color!: number;
+  public content!: string;
+  public categoryId!: number;
   public userId!: number;
 
-  // timestamps
+  //timestamps
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
-
-  public static associations: {
-    notes: Association<Category, Note>;
-  };
 }
 
-Category.init(
+Note.init(
   {
     id: {
       primaryKey: true,
@@ -34,8 +31,12 @@ Category.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    color: {
-      type: DataTypes.DOUBLE,
+    content: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    categoryId: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     userId: {
@@ -46,9 +47,9 @@ Category.init(
   config,
 );
 
-export default Category;
+export default Note;
 
-export const categorySchema: ValidationChain[] = checkSchema({
+export const noteSchema: ValidationChain[] = checkSchema({
   id: {
     in: ['params', 'query', 'body'],
     isInt: true,
@@ -62,9 +63,9 @@ export const categorySchema: ValidationChain[] = checkSchema({
     isString: true,
     errorMessage: 'Invalid title',
   },
-  color: {
+  content: {
     in: ['body'],
-    isFloat: true,
-    errorMessage: 'Invalid color',
+    isString: true,
+    errorMessage: 'Invalid content',
   },
 });
