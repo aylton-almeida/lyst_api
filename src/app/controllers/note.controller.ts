@@ -73,7 +73,13 @@ class NoteController {
   createNote = async (req: express.Request, res: express.Response) => {
     try {
       const note = await models.note.create(req.body);
-      return res.send(note);
+
+      const newNote = await models.note.findByPk(note.id, {
+        include: [{ model: Category, attributes: ['color'] }],
+        raw: true,
+      });
+
+      return res.send(newNote);
     } catch (e) {
       console.log(e);
       return res.status(500).send({ error: e.message });

@@ -1,6 +1,7 @@
 import sequelizeInstance from '../../database';
 import { DataTypes, Model } from 'sequelize';
 import { checkSchema, ValidationChain } from 'express-validator';
+import Category from './category.model';
 
 const config = {
   tableName: 'notes',
@@ -43,7 +44,7 @@ Note.init(
       allowNull: false,
     },
   },
-  config
+  config,
 );
 
 export default Note;
