@@ -24,6 +24,7 @@ class CategoryController {
     this.router.post(this.path, validate(categorySchema), this.createCategory);
     this.router.put(this.path, validate(categorySchema), this.updateCategory);
     this.router.delete(`${this.path}/:id`, validate(idValidator), this.deleteCategory);
+    this.router.post(`/clearcategory`, this.clearCategory);
   }
 
   getCategories = async (req: express.Request, res: express.Response) => {
@@ -85,6 +86,20 @@ class CategoryController {
       const { id } = req.params;
       const numDestroyed = await models.category.destroy({ where: { id } });
       if (numDestroyed >= 1) return res.send({ msg: 'Category deleted' });
+      else return res.status(404).send({ error: 'Category not found' });
+    } catch (e) {
+      console.log(e);
+      return res.status(500).send({ error: e.message });
+    }
+  };
+
+  clearCategory = async (req: express.Request, res: express.Response) => {
+    try {
+      const { categoryId } = req.body;
+      console.log(req.body);
+
+      const numDestroyed = await models.note.destroy({ where: { categoryId } });
+      if (numDestroyed >= 1) return res.send({ msg: 'Category cleared' });
       else return res.status(404).send({ error: 'Category not found' });
     } catch (e) {
       console.log(e);
