@@ -4,13 +4,13 @@
   "description": "Simple app to manage notes in categories",
   "main": "dist/server.js",
   "scripts": {
+    "dev:watch": "nodemon",
     "test": "jest src",
     "dev": "ts-node ./src/server.ts",
     "start": "yarn run serve",
     "build-ts": "tsc",
     "postinstall": "yarn run build-ts",
     "serve": "node dist/server.js",
-    "dev:watch": "nodemon",
     "lint": "tslint -c tslint.json 'src/**/*.ts'"
   },
   "authors": [

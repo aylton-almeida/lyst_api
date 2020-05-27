@@ -1,12 +1,11 @@
 import * as express from 'express';
 import { authTokenValidator, emailValidator, validate } from '../../utils/validation.utils';
-import { resetPassSchema, userSchema } from '../models/user.model';
+import { resetPassSchema, userSchema } from '../../database/models/user.model';
 import bcrypt from 'bcryptjs';
 import jwt, { JsonWebTokenError } from 'jsonwebtoken';
 import Mail from '../../services/mailer';
 import crypto from 'crypto';
-import Category from '../models/category.model';
-import models from '../models';
+import models from '../../database/models';
 
 const authHash = process.env.AUTH_HASH || 'AUTH_HASH';
 

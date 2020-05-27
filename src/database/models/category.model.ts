@@ -1,4 +1,4 @@
-import sequelizeInstance from '../../database';
+import sequelizeInstance from '..';
 import { Model, DataTypes, Association } from 'sequelize';
 import { checkSchema, ValidationChain } from 'express-validator';
 import Note from './note.model';

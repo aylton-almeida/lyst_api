@@ -1,4 +1,4 @@
-import sequelizeInstance from '../../database';
+import sequelizeInstance from '..';
 import { Association, DataTypes, Model } from 'sequelize';
 import { checkSchema, ValidationChain } from 'express-validator';
 import bcrypt from 'bcryptjs';

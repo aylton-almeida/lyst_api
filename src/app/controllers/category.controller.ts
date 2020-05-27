@@ -1,9 +1,9 @@
 import * as express from 'express';
-import Category, { categorySchema } from '../models/category.model';
+import Category, { categorySchema } from '../../database/models/category.model';
 import { validate, idValidator } from '../../utils/validation.utils';
 import authMiddleware from '../middlewares/auth.middleware';
 import Sequelize from 'sequelize';
-import models from '../models';
+import models from '../../database/models';
 
 class CategoryController {
   public path = '/category';

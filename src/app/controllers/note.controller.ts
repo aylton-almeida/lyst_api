@@ -1,9 +1,9 @@
 import * as express from 'express';
 import authMiddleware from '../middlewares/auth.middleware';
-import Category from '../models/category.model';
-import models from '../models';
+import Category from '../../database/models/category.model';
+import models from '../../database/models';
 import { validate, idValidator } from '../../utils/validation.utils';
-import { noteSchema } from '../models/note.model';
+import { noteSchema } from '../../database/models/note.model';
 
 class NoteController {
   public path = '/note';
